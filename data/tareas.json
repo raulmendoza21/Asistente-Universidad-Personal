@@ -1,1 +1,14 @@
-﻿
+{
+  "tareas": [
+    {
+      "id": 1,
+      "titulo": "Práctica 3 de PLN",
+      "descripcion": "Aprenderme la práctica 3 de Procesamiento de Lenguaje Natural",
+      "fecha_vencimiento": "2025-10-06",
+      "fecha_creacion": "2025-11-26 20:29",
+      "completada": false,
+      "prioridad": "alta"
+    }
+  ],
+  "next_id": 2
+}
