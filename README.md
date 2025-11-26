@@ -91,4 +91,8 @@ Comandos especiales: /reset /salir
 Raul Mendoza\
 Nestor Ortega\
 Asignatura: Procesamiento del Lenguaje Natural (PLN)\
+<<<<<<< HEAD
 Universidad de Las Palmas de Gran Canaria (ULPGC)
+=======
+Universidad de Las Palmas de Gran Canaria (ULPGC)
+>>>>>>> 1188957d9fba364cdbbe6c350fb1812050cf6dd5
