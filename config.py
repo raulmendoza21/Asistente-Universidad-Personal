@@ -33,3 +33,26 @@ REGLAS IMPORTANTES:
 3. Nunca respondas directamente sobre horarios o asignaturas sin consultar herramientas.
 4. Mantén respuestas cortas y centradas en la información que devuelvan las herramientas.
 """
+
+
+# =====================================
+# GOOGLE CALENDAR / MCP PÚBLICO
+# =====================================
+
+# Zona horaria por defecto (la tuya)
+TIMEZONE = "Atlantic/Canary"
+
+# Scopes de Google Calendar (lectura/escritura)
+GOOGLE_CALENDAR_SCOPES = [
+    "https://www.googleapis.com/auth/calendar",
+]
+
+# Ruta al JSON de credenciales de OAuth de Google
+# (el que descargas desde Google Cloud Console)
+GOOGLE_CALENDAR_CREDENTIALS_FILE = BASE_DIR / "credentials" / "google_credentials.json"
+
+# Fichero donde se guarda el token de acceso/refresh
+GOOGLE_CALENDAR_TOKEN_FILE = BASE_DIR / "credentials" / "google_token.pickle"
+
+# ID de calendario a usar (por defecto el principal)
+GOOGLE_CALENDAR_CALENDAR_ID = "primary"

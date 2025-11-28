@@ -1,10 +1,13 @@
 ﻿from fastmcp import FastMCP
 from data_manager import DataManager
 from typing import List, Dict
+from google_calendar_client import GoogleCalendarClient
 
 # Inicializar servidor MCP
 mcp = FastMCP("Universidad Assistant")
 dm = DataManager()
+data_manager = DataManager()
+calendar_client = GoogleCalendarClient()
 
 # ========== HERRAMIENTAS DE CONSULTA ==========
 
@@ -120,6 +123,75 @@ def eliminar_tarea(id_tarea: int) -> Dict:
         Confirmación de la eliminación
     """
     return dm.eliminar_tarea(id_tarea)
+
+@mcp.tool()
+def listar_eventos_calendario(
+    fecha_inicio: str,
+    fecha_fin: str,
+    max_resultados: int = 10,
+) -> list[dict]:
+    """
+    Lista eventos del Google Calendar asociado entre dos fechas.
+
+    Parámetros:
+    - fecha_inicio: fecha y hora inicio en formato 'YYYY-MM-DD HH:MM'
+    - fecha_fin: fecha y hora fin en formato 'YYYY-MM-DD HH:MM'
+    - max_resultados: número máximo de eventos a recuperar.
+
+    Devuelve:
+    - Lista de eventos con id, summary, description, location, start, end.
+    """
+    return calendar_client.list_events(
+        fecha_inicio=fecha_inicio,
+        fecha_fin=fecha_fin,
+        max_resultados=max_resultados,
+    )
+
+
+@mcp.tool()
+def crear_evento_calendario(
+    titulo: str,
+    fecha_inicio: str,
+    fecha_fin: str,
+    descripcion: str | None = None,
+    ubicacion: str | None = None,
+) -> dict:
+    """
+    Crea un nuevo evento en Google Calendar.
+
+    Parámetros:
+    - titulo: título del evento.
+    - fecha_inicio: 'YYYY-MM-DD HH:MM'
+    - fecha_fin: 'YYYY-MM-DD HH:MM'
+    - descripcion: texto opcional describiendo el evento.
+    - ubicacion: ubicación opcional del evento.
+
+    Devuelve:
+    - Un diccionario con id, summary y htmlLink del evento creado.
+    """
+    return calendar_client.create_event(
+        titulo=titulo,
+        fecha_inicio=fecha_inicio,
+        fecha_fin=fecha_fin,
+        descripcion=descripcion,
+        ubicacion=ubicacion,
+    )
+
+
+@mcp.tool()
+def eliminar_evento_calendario(event_id: str) -> dict:
+    """
+    Elimina un evento de Google Calendar por su ID.
+
+    Parámetros:
+    - event_id: identificador del evento en Google Calendar,
+      normalmente obtenido de listar_eventos_calendario.
+
+    Devuelve:
+    - Un diccionario con el estado de la operación.
+    """
+    return calendar_client.delete_event(event_id)
+
 
 # Para ejecutar el servidor
 if __name__ == "__main__":
