@@ -44,39 +44,40 @@ class QwenAgent:
         })
 
     def _build_messages(self, user_message: str = None) -> List[Dict]:
-            """
-            Construye la lista de mensajes que se envían al modelo,
-            inyectando siempre la fecha actual para que 'hoy' y 'mañana'
-            se conviertan a fechas correctas.
-            """
-            # Fecha y hora actual en la zona horaria configurada
+        """
+        Construye la lista de mensajes que se envían al modelo,
+        usando hora actual y manejando cualquier problema de zona horaria.
+        """
+        # Manejo robusto de zona horaria
+        try:
             ahora = datetime.now(ZoneInfo(TIMEZONE))
-            ahora_str = ahora.strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            # Si la zona no existe en el sistema, usa hora local sin zona
+            ahora = datetime.now()
 
-            # System prompt enriquecido con la fecha actual y reglas claras
-            system_with_date = (
-                SYSTEM_PROMPT
-                + f"\n\nFecha actual: {ahora_str} ({TIMEZONE}). "
-                "Cuando el usuario use palabras como 'hoy', 'mañana' o "
-                "'pasado mañana', debes convertirlas SIEMPRE a fechas "
-                "completas en formato 'YYYY-MM-DD HH:MM' usando esta "
-                "fecha como referencia. "
-                "Nunca pongas años anteriores al año actual salvo que "
-                "el usuario lo pida explícitamente."
-            )
+        ahora_str = ahora.strftime("%Y-%m-%d %H:%M")
 
-            messages: List[Dict[str, str]] = [
-                {"role": "system", "content": system_with_date}
-            ]
+        system_with_date = (
+            SYSTEM_PROMPT
+            + f"\n\nFecha actual: {ahora_str}. "
+            "Cuando el usuario use palabras como 'hoy', 'mañana' o "
+            "'pasado mañana', debes convertirlas SIEMPRE a fechas "
+            "completas en formato 'YYYY-MM-DD HH:MM' usando esta "
+            "fecha como referencia. "
+            "Nunca pongas años anteriores al año actual salvo que "
+            "el usuario lo pida explícitamente."
+        )
 
-            # Historial de conversación previo
-            messages.extend(self.conversation_history)
+        messages: List[Dict[str, str]] = [
+            {"role": "system", "content": system_with_date}
+        ]
 
-            # Mensaje actual del usuario (si lo hay)
-            if user_message:
-                messages.append({"role": "user", "content": user_message})
+        messages.extend(self.conversation_history)
 
-            return messages
+        if user_message:
+            messages.append({"role": "user", "content": user_message})
+
+        return messages
 
     def _execute_tool(self, tool_name: str, tool_args: Dict) -> str:
         """

@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
 TAREAS_FILE = DATA_DIR / "tareas.json"
 UNIVERSIDAD_FILE = DATA_DIR / "universidad.json"
-TIMEZONE = "Europe/Madrid"
+
 
 # Asegurar que existen los directorios
 DATA_DIR.mkdir(exist_ok=True)
@@ -46,7 +46,7 @@ Si dudas, pregunta qué año quiere el usuario.
 # =====================================
 
 # Zona horaria por defecto (la tuya)
-TIMEZONE = "Atlantic/Canary"
+TIMEZONE = "UTC"
 
 # Scopes de Google Calendar (lectura/escritura)
 GOOGLE_CALENDAR_SCOPES = [
