@@ -8,7 +8,16 @@
       "fecha_creacion": "2025-11-26 20:29",
       "completada": false,
       "prioridad": "alta"
+    },
+    {
+      "id": 2,
+      "titulo": "Entregar práctica",
+      "descripcion": "",
+      "fecha_vencimiento": "2025-12-15",
+      "fecha_creacion": "2025-12-05 16:32",
+      "completada": false,
+      "prioridad": "media"
     }
   ],
-  "next_id": 2
+  "next_id": 3
 }

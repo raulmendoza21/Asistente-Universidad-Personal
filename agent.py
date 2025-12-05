@@ -82,7 +82,8 @@ class QwenAgent:
     def _execute_tool(self, tool_name: str, tool_args: Dict) -> str:
         """
         Ejecuta una herramienta y retorna el resultado como string JSON.
-        Intenta desenvolver wrappers tipo FunctionTool antes de llamar.
+        Intenta desenvolver wrappers tipo FunctionTool antes de llamar
+        y convierte el resultado a algo JSON-serializable.
         """
         if tool_name not in self.tools_map:
             error_msg = f"Herramienta '{tool_name}' no encontrada"
@@ -103,13 +104,70 @@ class QwenAgent:
             elif hasattr(function, "__call__"):
                 function = function.__call__
 
+        def make_jsonable(obj):
+            """
+            Convierte cualquier objeto devuelto por la tool en algo que
+            json.dumps pueda manejar: dict, list, str, int, float, bool, None.
+            Maneja tipos como CallToolResult, modelos pydantic, dataclasses, etc.
+            """
+            # Tipos básicos directamente serializables
+            if obj is None or isinstance(obj, (str, int, float, bool)):
+                return obj
+
+            # Listas / tuplas
+            if isinstance(obj, (list, tuple)):
+                return [make_jsonable(x) for x in obj]
+
+            # Diccionarios
+            if isinstance(obj, dict):
+                return {k: make_jsonable(v) for k, v in obj.items()}
+
+            # Objetos con model_dump (pydantic v2)
+            if hasattr(obj, "model_dump") and callable(obj.model_dump):
+                try:
+                    return make_jsonable(obj.model_dump())
+                except Exception:
+                    pass
+
+            # Objetos con dict() (pydantic v1, dataclasses con método dict)
+            if hasattr(obj, "dict") and callable(obj.dict):
+                try:
+                    return make_jsonable(obj.dict())
+                except Exception:
+                    pass
+
+            # Objetos con atributo "content" o "result" (como CallToolResult)
+            if hasattr(obj, "content"):
+                try:
+                    return make_jsonable(obj.content)
+                except Exception:
+                    pass
+
+            if hasattr(obj, "result"):
+                try:
+                    return make_jsonable(obj.result)
+                except Exception:
+                    pass
+
+            # Último recurso: usar __dict__ si existe
+            if hasattr(obj, "__dict__"):
+                try:
+                    return make_jsonable(obj.__dict__)
+                except Exception:
+                    pass
+
+            # Fallback final: representarlo como string
+            return str(obj)
+
         try:
             result = function(**tool_args)
-            return json.dumps(result, ensure_ascii=False, indent=2)
+            serializable_result = make_jsonable(result)
+            return json.dumps(serializable_result, ensure_ascii=False, indent=2)
         except Exception as e:
             error_msg = f"Error ejecutando {tool_name}: {str(e)}"
             print("❌", error_msg)
             return json.dumps({"error": error_msg}, ensure_ascii=False)
+
 
     def chat(self, user_message: str, max_turns: int = 10) -> str:
         """
