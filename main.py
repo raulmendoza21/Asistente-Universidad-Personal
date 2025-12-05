@@ -214,8 +214,12 @@ def register_tools(agent: QwenAgent):
         function=crear_evento_calendario,
         description=(
             "Crea un nuevo evento en Google Calendar. "
-            "Úsalo cuando el usuario quiera guardar un recordatorio o reunión "
-            "en una fecha y hora concretas."
+            "Siempre debes convertir expresiones como 'hoy', 'mañana' o "
+            "'el viernes que viene' a una fecha completa usando la fecha "
+            "actual que se indica en el mensaje de sistema. "
+            "Las fechas deben ir en formato 'YYYY-MM-DD HH:MM'. "
+            "Nunca utilices años anteriores al año actual salvo que el "
+            "usuario lo pida explícitamente."
         ),
         parameters={
             "type": "object",

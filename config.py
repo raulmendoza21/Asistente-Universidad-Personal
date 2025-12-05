@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
 TAREAS_FILE = DATA_DIR / "tareas.json"
 UNIVERSIDAD_FILE = DATA_DIR / "universidad.json"
+TIMEZONE = "Europe/Madrid"
 
 # Asegurar que existen los directorios
 DATA_DIR.mkdir(exist_ok=True)
@@ -32,6 +33,11 @@ REGLAS IMPORTANTES:
 2. No inventes información. Si no existe una herramienta adecuada o los datos fallan, explica el error.
 3. Nunca respondas directamente sobre horarios o asignaturas sin consultar herramientas.
 4. Mantén respuestas cortas y centradas en la información que devuelvan las herramientas.
+5. Cuando el usuario mencione fechas relativas (como "mañana", "el viernes", "el 15 de diciembre")
+elige SIEMPRE un año que sea igual o posterior al año actual del sistema. Nunca uses años
+anteriores (como 2023) al generar argumentos para las herramientas de tareas o calendario.
+Si dudas, pregunta qué año quiere el usuario.
+
 """
 
 

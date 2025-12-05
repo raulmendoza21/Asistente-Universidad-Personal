@@ -1,7 +1,9 @@
-from huggingface_hub import InferenceClient
-from typing import List, Dict, Any
+from typing import List, Dict, Callable, Any
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import json
-from config import HF_TOKEN, MODEL_NAME, SYSTEM_PROMPT
+from huggingface_hub import InferenceClient
+from config import HF_TOKEN, MODEL_NAME, SYSTEM_PROMPT, TIMEZONE
 
 
 class QwenAgent:
@@ -42,19 +44,39 @@ class QwenAgent:
         })
 
     def _build_messages(self, user_message: str = None) -> List[Dict]:
-        """
-        Construye el array de mensajes para la API de Hugging Face.
-        Solo se usan roles: system, user, assistant.
-        """
-        messages: List[Dict[str, str]] = [
-            {"role": "system", "content": SYSTEM_PROMPT}
-        ]
-        messages.extend(self.conversation_history)
+            """
+            Construye la lista de mensajes que se envían al modelo,
+            inyectando siempre la fecha actual para que 'hoy' y 'mañana'
+            se conviertan a fechas correctas.
+            """
+            # Fecha y hora actual en la zona horaria configurada
+            ahora = datetime.now(ZoneInfo(TIMEZONE))
+            ahora_str = ahora.strftime("%Y-%m-%d %H:%M")
 
-        if user_message:
-            messages.append({"role": "user", "content": user_message})
+            # System prompt enriquecido con la fecha actual y reglas claras
+            system_with_date = (
+                SYSTEM_PROMPT
+                + f"\n\nFecha actual: {ahora_str} ({TIMEZONE}). "
+                "Cuando el usuario use palabras como 'hoy', 'mañana' o "
+                "'pasado mañana', debes convertirlas SIEMPRE a fechas "
+                "completas en formato 'YYYY-MM-DD HH:MM' usando esta "
+                "fecha como referencia. "
+                "Nunca pongas años anteriores al año actual salvo que "
+                "el usuario lo pida explícitamente."
+            )
 
-        return messages
+            messages: List[Dict[str, str]] = [
+                {"role": "system", "content": system_with_date}
+            ]
+
+            # Historial de conversación previo
+            messages.extend(self.conversation_history)
+
+            # Mensaje actual del usuario (si lo hay)
+            if user_message:
+                messages.append({"role": "user", "content": user_message})
+
+            return messages
 
     def _execute_tool(self, tool_name: str, tool_args: Dict) -> str:
         """

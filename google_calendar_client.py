@@ -63,12 +63,26 @@ class GoogleCalendarClient:
 
     def _parse_to_iso(self, fecha_hora: str) -> str:
         """
-        Convierte 'YYYY-MM-DD HH:MM' a ISO 8601 con timezone.
-        Ejemplo: '2025-11-28 10:00' -> '2025-11-28T10:00:00+01:00'
+        Convierte 'YYYY-MM-DD HH:MM' a ISO 8601 y ajusta el año para que
+        la fecha/hora resultante sea como mínimo en el presente o futuro.
+
+        Ejemplo (suponiendo hoy = 2025-11-28 15:00):
+        - '2023-12-20 10:00' -> '2025-12-20T10:00:00'
+        - '2024-05-10 09:00' -> '2025-05-10T09:00:00'
+        - '2025-01-01 08:00' -> '2026-01-01T08:00:00' (si ya pasó)
+        - '2026-03-01 12:00' -> se respeta como está
         """
-        # Ajusta el formato si quieres aceptar otros
         dt = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M")
-        # NO ponemos offset manual, dejamos que Google use la TZ
+        ahora = datetime.now()
+
+        # Si el año es menor que el actual, súbelo al año actual
+        if dt.year < ahora.year:
+            dt = dt.replace(year=ahora.year)
+
+        # Si sigue siendo pasado, súbelo al año siguiente
+        if dt < ahora:
+            dt = dt.replace(year=dt.year + 1)
+
         return dt.isoformat()
 
     def list_events(

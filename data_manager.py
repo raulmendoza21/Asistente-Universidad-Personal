@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List, Dict, Optional
 from datetime import datetime
 from config import TAREAS_FILE, UNIVERSIDAD_FILE
+from utils import normalizar_fecha_futura
 
 class DataManager:
     def __init__(self):
@@ -162,7 +163,7 @@ class DataManager:
                     descripcion: str = "", prioridad: str = "media") -> Dict:
         """Crea una nueva tarea"""
         data = self._load_json(TAREAS_FILE)
-        
+        fecha_vencimiento = normalizar_fecha_futura(fecha_vencimiento)
         nueva_tarea = {
             "id": data["next_id"],
             "titulo": titulo,
