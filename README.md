@@ -14,8 +14,7 @@ tareas mediante un agente conversacional basado en el modelo Qwen 2.5-Instruct
 
 Aunque el enunciado de la practica menciona el uso de la API de OpenAI,
 este proyecto utiliza Qwen 2.5-Instruct a traves de la Inference API de
-HuggingFace, opcion aceptada por el profesor para el desarrollo de la
-practica.
+HuggingFace.
 
 El sistema permite:
 
