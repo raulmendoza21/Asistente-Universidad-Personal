@@ -1,6 +1,6 @@
 # Asistente Universidad Personal
 
-Autores: Raul Mendoza, Nestor Ortega  
+Autores: Raul Mendoza
 Asignatura: Procesamiento del Lenguaje Natural (PLN)  
 Universidad de Las Palmas de Gran Canaria (ULPGC)
 
@@ -174,6 +174,5 @@ contexto temporal real de la ejecucion.
 ## Autores
 
 Raul Mendoza  
-Nestor Ortega  
 Asignatura: Procesamiento del Lenguaje Natural (PLN)  
 Universidad de Las Palmas de Gran Canaria (ULPGC)
